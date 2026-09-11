@@ -2,17 +2,12 @@
 
 # Import Packages
 import pandas as pd
-import numpy as np
-import random
-import spacy
 import re
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-
-nlp = spacy.load('en_core_web_sm')
 
 # Set Parameters
 pd.set_option("display.precision", 3)
@@ -38,7 +33,7 @@ def clean_text(text):
 	text = re.sub(r'[^a-zA-Z\s]', '', text)  # Keep only letters/spaces
 	return text
 # Apply to dataset
-ds["clean_text"] = ds["text"].apply(clean_txt)
+ds["clean_text"] = ds["text"].apply(clean_text)
 print(ds)
 
 
@@ -53,3 +48,18 @@ def normalise_text(clean_text):
 
 ds["normalise_text"] = ds["clean_text"].apply(normalise_text)
 print(ds)
+
+
+# SENTIMENT ANALYSIS
+
+analyser = SentimentIntensityAnalyzer()  # Initialise analyser
+
+def get_sentiment(normalise_text):  # Create sentiment function
+	scores = analyser.polarity_scores(normalise_text)  # Define score
+	get_sentiment = 1 if scores ["pos"] > 0 else 0  # Create column based off score
+	return get_sentiment  # Return new column
+
+ds["get_sentiment"] = ds["normalise_text"].apply(get_sentiment)  # Apply get_sentiment function
+print(ds)
+
+print("Cols in df:", ds.columns.tolist())
