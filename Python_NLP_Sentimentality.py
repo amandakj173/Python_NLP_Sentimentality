@@ -8,6 +8,8 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+import revised_stopwords
+from revised_stopwords import get_revised_stopwords
 
 # Set Parameters
 pd.set_option("display.precision", 3)
@@ -23,6 +25,9 @@ print(ds)
 print(ds.info())
 
 # PREPROCESSING
+
+# Text Sampling
+ds = ds.sample(n = 1000, random_state = 42).reset_index(drop=True)
 
 # Text Cleaning
 def clean_text(text):
@@ -41,8 +46,9 @@ print(ds)
 def normalise_text(clean_text):
 	tokens = word_tokenize(clean_text)  # Tokenise
 	filtered_tokens = [token for token in tokens if token not in stopwords.words('english')]  # Remove stopwords
+	revised_filtered_tokens = [token for token in tokens if token not in get_revised_stopwords()]  # Get & apply revised stopwords for context
 	lemmatizer = WordNetLemmatizer()  # Lemmatise
-	lemmatized_tokens = [lemmatizer.lemmatize(token) for token in filtered_tokens]
+	lemmatized_tokens = [lemmatizer.lemmatize(token) for token in revised_filtered_tokens]
 	processed_text = " ".join(lemmatized_tokens)  # Join tokens back into string
 	return processed_text
 
@@ -56,7 +62,7 @@ analyser = SentimentIntensityAnalyzer()  # Initialise analyser
 
 def get_sentiment(normalise_text):  # Create sentiment function
 	scores = analyser.polarity_scores(normalise_text)  # Define score
-	get_sentiment = 1 if scores ["pos"] > 0 else 0  # Create column based off score
+	get_sentiment = 1 if scores ["pos"] > 0 else 0  # Create column based off score (+1 = pos, -1 = neg)
 	return get_sentiment  # Return new column
 
 ds["get_sentiment"] = ds["normalise_text"].apply(get_sentiment)  # Apply get_sentiment function
