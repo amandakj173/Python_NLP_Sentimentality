@@ -14,6 +14,6 @@ The project implements a structured NLP processing and analysis workflow:
 ### VADER
 Analysis using VADER's compound polarity metric mapped normalised text strings into intervals. These intervals range from +1.0 to -1.0, wherein +1.0 indicates extreme positive sentiment, 0.0 represents neutral tone, and -1.0 indicates extreme negative sentiment.
 
-### Next Steps
+## Next Steps
 1. To add a benchmark comparison against original dataset lables by mapping and evaluating using a confusion matrix and classification report to identify where VADER analysis succeeds or fails.
 2. To train a predictive model on new utterances to learn X-specific vocabulary patterns and predict sentiment in real time.
