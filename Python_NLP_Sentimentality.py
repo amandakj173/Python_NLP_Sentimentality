@@ -6,6 +6,11 @@ import numpy as np
 import random
 import spacy
 import re
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 
 nlp = spacy.load('en_core_web_sm')
 
@@ -36,22 +41,15 @@ def clean_text(text):
 ds["clean_text"] = ds["text"].apply(clean_txt)
 print(ds)
 
-# Test/Train Split
-random.seed(123)  # Randomisation
 
-# Split train/test sets
-obs = len(ds)
-test_idx = np.random.choice(
-	obs,
-	size = round(obs * 0.3),
-	replace = False
-)
+# NORMALISATION
+def normalise_text(clean_text):
+	tokens = word_tokenize(clean_text)  # Tokenise
+	filtered_tokens = [token for token in tokens if token not in stopwords.words('english')]  # Remove stopwords
+	lemmatizer = WordNetLemmatizer()  # Lemmatise
+	lemmatized_tokens = [lemmatizer.lemmatize(token) for token in filtered_tokens]
+	processed_text = " ".join(lemmatized_tokens)  # Join tokens back into string
+	return processed_text
 
-test_ds = ds.iloc[test_idx]
-train_ds = ds.drop(ds.index[test_idx])
-
-print(train_ds.info())
-print(test_ds.info())
-
-# WORD VECTORS
-docs = [nlp(text) for text in train_ds]
+ds["normalise_text"] = ds["clean_text"].apply(normalise_text)
+print(ds)
