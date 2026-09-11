@@ -62,10 +62,8 @@ analyser = SentimentIntensityAnalyzer()  # Initialise analyser
 
 def get_sentiment(normalise_text):  # Create sentiment function
 	scores = analyser.polarity_scores(normalise_text)  # Define score
-	get_sentiment = 1 if scores ["pos"] > 0 else 0  # Create column based off score (+1 = pos, -1 = neg)
+	get_sentiment = scores["compound"]
 	return get_sentiment  # Return new column
 
 ds["get_sentiment"] = ds["normalise_text"].apply(get_sentiment)  # Apply get_sentiment function
 print(ds)
-
-print("Cols in df:", ds.columns.tolist())
